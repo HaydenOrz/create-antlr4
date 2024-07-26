@@ -95,24 +95,27 @@ async function init() {
       required: true,
       theme: {
         style: {
-          message: (text: string) => chalk.reset(text)
-        }
-      }
+          message: (text: string) => chalk.reset(text),
+        },
+      },
     });
 
     const targetDir = getTargetDir(answers.projectName);
-    const packageName = getPackageName(answers.projectName)
+    const packageName = getPackageName(answers.projectName);
 
     if (fs.existsSync(targetDir) && !isEmpty(targetDir)) {
-      const message = (targetDir === '.' ? 'Current directory' : `Target directory ${chalk.underline(targetDir)}`) +
-          ` is not empty. Remove existing files and continue?`
+      const message =
+        (targetDir === '.'
+          ? 'Current directory'
+          : `Target directory ${chalk.underline(targetDir)}`) +
+        ` is not empty. Remove existing files and continue?`;
       answers.overwrite = await confirm({
         message: chalk.reset(message),
         theme: {
           style: {
-            message: (text: string) => chalk.reset(text)
-          }
-        }
+            message: (text: string) => chalk.reset(text),
+          },
+        },
       });
     }
 
@@ -130,9 +133,9 @@ async function init() {
         },
         theme: {
           style: {
-            message: (text: string) => chalk.reset(text)
-          }
-        }
+            message: (text: string) => chalk.reset(text),
+          },
+        },
       });
     }
 
@@ -152,9 +155,9 @@ async function init() {
       ],
       theme: {
         style: {
-          message: (text: string) => chalk.reset(text)
-        }
-      }
+          message: (text: string) => chalk.reset(text),
+        },
+      },
     });
   } catch (e: any) {
     if (e.cause === 'cancelled') {
@@ -181,7 +184,11 @@ async function init() {
 
   console.log(`\nCreating project in ${root}...`);
 
-  const templateDir = path.join(fileURLToPath(import.meta.url), '../..', `template-${template}`);
+  const templateDir = path.join(
+    fileURLToPath(import.meta.url),
+    '../../templates',
+    `template-${template}`
+  );
 
   const pkgInfo = pkgFromUserAgent(process.env.npm_config_user_agent);
   const pkgManager = pkgInfo ? pkgInfo.name : 'npm';
@@ -196,8 +203,7 @@ async function init() {
   };
 
   const files = fs.readdirSync(templateDir);
-  files.filter((f) => f !== 'package.json').forEach(file => write(file))
-
+  files.filter((f) => f !== 'package.json').forEach((file) => write(file));
 
   const pkg = JSON.parse(fs.readFileSync(path.join(templateDir, `package.json`), 'utf-8'));
   pkg.name = packageName || getPackageName(projectName);
@@ -211,10 +217,12 @@ async function init() {
   switch (pkgManager) {
     case 'yarn':
       console.log('  yarn');
+      console.log('  yarn generate');
       console.log('  yarn dev');
       break;
     default:
       console.log(`  ${pkgManager} install`);
+      console.log(`  ${pkgManager} run generate`);
       console.log(`  ${pkgManager} run dev`);
       break;
   }
