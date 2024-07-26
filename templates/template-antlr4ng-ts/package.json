@@ -1,0 +1,19 @@
+{
+  "name": "template-antlr4ng-ts",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "format-g4": "antlr-format -c antlrformat.config -v src/grammar/**/*.g4",
+    "generate": "./scripts/generate.mjs",
+    "dev": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "antlr4ng": "^3.0.4"
+  },
+  "devDependencies": {
+    "antlr-format-cli": "^1.2.8",
+    "antlr4ng-cli": "^2.0.0",
+    "tsx": "^4.16.2",
+    "typescript": "^5.5.4"
+  }
+}
