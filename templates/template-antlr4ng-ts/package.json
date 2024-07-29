@@ -3,8 +3,8 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "format-g4": "antlr-format -c antlrformat.config -v src/grammar/**/*.g4",
-    "generate": "./scripts/generate.mjs",
+    "g4format": "antlr-format -c antlrformat.config -v src/grammar/**/*.g4",
+    "generate": "scripts/generate.mjs",
     "dev": "tsx src/index.ts"
   },
   "dependencies": {

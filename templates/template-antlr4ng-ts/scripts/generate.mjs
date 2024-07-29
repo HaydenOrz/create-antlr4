@@ -6,31 +6,27 @@ import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
 
 const cwd = process.cwd();
-
 const grammarPath = path.relative(
   cwd,
   path.join(fileURLToPath(import.meta.url), '../../', 'src/grammar')
 );
+const grammarEntries = fs.readdirSync(grammarPath);
 const outputPath = path.relative(
   cwd,
   path.join(fileURLToPath(import.meta.url), '../../', 'src/gen')
 );
-
-const grammars = fs.readdirSync(grammarPath);
 
 function compile(language) {
   const outputDir = path.join(outputPath, language);
   const grammarDir = path.join(grammarPath, language);
 
   if (fs.existsSync(outputDir)) {
-    console.log(`\nClearing ${outputDir}/* ...`);
-    console.log();
+    console.log(`Clearing ${outputDir}/* ...`);
     fs.rmSync(outputDir, { recursive: true });
   }
 
   console.log(`Generating ${language} parser ...`);
   console.log();
-
   const child = spawn(
     'antlr4ng',
     [
@@ -43,7 +39,7 @@ function compile(language) {
       `${grammarDir}/*.g4`,
     ],
     {
-      stdio: ['inherit', 'inherit', 'inherit'],
+      stdio: ['inherit', 'pipe', 'inherit'],
       cwd: process.cwd(),
       shell: true,
     }
@@ -66,17 +62,13 @@ function main() {
   const lang = process.argv[2];
 
   if (lang === undefined) {
-    grammars.forEach((language) => {
-      compile(language);
-    });
-
+    grammarEntries.forEach(compile);
     return;
   }
 
-  const supportedLanguage = grammars.find((language) => language.startsWith(lang));
-
-  if (supportedLanguage) {
-    compile(supportedLanguage);
+  const targetEntries = grammarEntries.find((en) => en.startsWith(lang));
+  if (targetEntries) {
+    compile(targetEntries);
   } else {
     console.error(`\nError: ${lang} is not found!\n`);
   }
