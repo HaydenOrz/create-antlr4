@@ -1,15 +1,11 @@
 import antlr4, { CharStreams, CommonTokenStream } from 'antlr4';
 import JsonLexer from './gen/json/JsonLexer.js';
-import JsonParser from './gen/json/JsonParser.js'
+import JsonParser from './gen/json/JsonParser.js';
 import JsonListener from './gen/json/JsonListener.js';
 
-
 class JSON2XMLListener extends JsonListener {
-  constructor(
-    useIndent = true,
-    tabWidth = 4
-  ) {
-    super()
+  constructor(useIndent = true, tabWidth = 4) {
+    super();
     this.useIndent = useIndent;
     this.tabWidth = tabWidth;
   }

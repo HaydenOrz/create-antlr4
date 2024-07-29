@@ -1,8 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { input, select, confirm } from '@inquirer/prompts';
-import chalk from 'chalk';
 import { fileURLToPath } from 'node:url';
+import prompts from 'prompts';
+import kleur from 'kleur';
 
 const defaultTargetDir = 'antlr4-project';
 const cwd = process.cwd();
@@ -73,107 +73,86 @@ function pkgFromUserAgent(userAgent: string | undefined) {
   };
 }
 
-type IAnswer = {
-  projectName: string;
-  overwrite?: boolean;
-  packageName?: string;
-  template: string;
-};
-
 async function init() {
-  const getPackageName = (projectName: string) => {
-    const targetDir = getTargetDir(projectName);
+  let answers: prompts.Answers<'projectName' | 'overwrite' | 'packageName' | 'template'> =
+    {} as any;
+
+  let targetDir = defaultTargetDir;
+
+  const getPackageName = () => {
     return targetDir === '.' ? path.basename(path.resolve()) : targetDir;
   };
 
-  let answers: IAnswer = {} as any;
-
   try {
-    answers.projectName = await input({
-      message: 'Project name:',
-      default: defaultTargetDir,
-      required: true,
-      theme: {
-        style: {
-          message: (text: string) => chalk.reset(text),
-        },
-      },
-    });
-
-    const targetDir = getTargetDir(answers.projectName);
-    const packageName = getPackageName(answers.projectName);
-
-    if (fs.existsSync(targetDir) && !isEmpty(targetDir)) {
-      const message =
-        (targetDir === '.'
-          ? 'Current directory'
-          : `Target directory ${chalk.underline(targetDir)}`) +
-        ` is not empty. Remove existing files and continue?`;
-      answers.overwrite = await confirm({
-        message: chalk.reset(message),
-        theme: {
-          style: {
-            message: (text: string) => chalk.reset(text),
+    answers = await prompts(
+      [
+        {
+          type: 'text',
+          name: 'projectName',
+          message: kleur.reset('Project name:'),
+          initial: defaultTargetDir,
+          onState: (state) => {
+            targetDir = getTargetDir(state.value) || defaultTargetDir;
           },
         },
-      });
-    }
-
-    if (answers.overwrite === false) {
-      throw new Error('Operation cancelled', { cause: 'cancelled' });
-    }
-
-    if (!isValidPackageName(packageName)) {
-      answers.packageName = await input({
-        message: 'Package name:',
-        required: true,
-        default: toValidPackageName(packageName),
-        validate(input: string) {
-          return isValidPackageName(input) || 'Invalid package.json name';
-        },
-        theme: {
-          style: {
-            message: (text: string) => chalk.reset(text),
+        {
+          type: () => (fs.existsSync(targetDir) && !isEmpty(targetDir) ? 'confirm' : null),
+          name: 'overwrite',
+          message: () => {
+            const text =
+              (targetDir === '.'
+                ? 'Current directory'
+                : `Target directory ${kleur.underline(targetDir)}`) +
+              ` is not empty. Remove existing files and continue?`;
+            return kleur.reset(text);
           },
         },
-      });
-    }
-
-    answers.template = await select({
-      message: 'Select a template',
-      choices: [
         {
-          name: 'Antlr4ng + Typescript (Recommended)',
-          value: 'antlr4ng-typescript',
-          description: 'Fully supports typescript',
+          type: (_, { overwrite }: { overwrite?: boolean }) => {
+            if (overwrite === false) {
+              throw new Error('Operation cancelled');
+            }
+            return null;
+          },
+          name: 'overwriteChecker',
         },
         {
-          name: 'Antlr4 + JavaScript',
-          value: 'antlr4-javascript',
-          description: 'The official Antlr4 runtime',
+          type: () => (isValidPackageName(getPackageName()) ? null : 'text'),
+          name: 'packageName',
+          message: kleur.reset('Package name:'),
+          initial: () => toValidPackageName(getPackageName()),
+          validate: (dir) => isValidPackageName(dir) || 'Invalid package.json name',
+        },
+        {
+          type: 'select',
+          name: 'template',
+          message: kleur.reset('Select a template'),
+          choices: [
+            {
+              title: 'Antlr4ng + Typescript (Recommended)',
+              value: 'antlr4ng-typescript',
+              description: 'Fully supports typescript',
+            },
+            {
+              title: 'Antlr4 + JavaScript',
+              value: 'antlr4-javascript',
+              description: 'The official Antlr4 runtime',
+            },
+          ],
         },
       ],
-      theme: {
-        style: {
-          message: (text: string) => chalk.reset(text),
+      {
+        onCancel: () => {
+          throw new Error('Operation cancelled');
         },
-      },
-    });
+      }
+    );
   } catch (e: any) {
-    if (e.cause === 'cancelled') {
-      console.error('\n' + chalk.red('✖') + ' ' + e.message);
-    } else if (e.constructor.name === 'ExitPromptError') {
-      console.error('\n' + chalk.red('✖') + ' Operation interrupted manually');
-    } else if (e.constructor.name === 'CancelPromptError') {
-      console.error('\n' + chalk.red('✖') + ' Operation interrupted');
-    } else {
-      console.error(e);
-    }
+    console.error('\n' + kleur.red('✖') + ' ' + e.message);
     return;
   }
 
-  const { projectName, overwrite, packageName, template } = answers;
-  const targetDir = getTargetDir(answers.projectName);
+  const { overwrite, packageName, template } = answers;
   const root = path.join(cwd, targetDir);
 
   if (overwrite) {
@@ -184,11 +163,7 @@ async function init() {
 
   console.log(`\nCreating project in ${root}...`);
 
-  const templateDir = path.join(
-    fileURLToPath(import.meta.url),
-    '../../templates',
-    template
-  );
+  const templateDir = path.join(fileURLToPath(import.meta.url), '../../templates', template);
 
   const pkgInfo = pkgFromUserAgent(process.env.npm_config_user_agent);
   const pkgManager = pkgInfo ? pkgInfo.name : 'npm';
@@ -206,7 +181,7 @@ async function init() {
   files.filter((f) => f !== 'package.json').forEach((file) => write(file));
 
   const pkg = JSON.parse(fs.readFileSync(path.join(templateDir, `package.json`), 'utf-8'));
-  pkg.name = packageName || getPackageName(projectName);
+  pkg.name = packageName || getPackageName();
   write('package.json', JSON.stringify(pkg, null, 2) + '\n');
 
   const cdProjectName = path.relative(cwd, root);
