@@ -1,6 +1,6 @@
 {
   "name": "create-antlr4",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "description": "",
   "author": "Hayden",
   "license": "MIT",
@@ -19,8 +19,19 @@
     "build": "unbuild"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=14"
   },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HaydenOrz/create-antlr4.git"
+  },
+  "bugs": {
+    "url": "https://github.com/HaydenOrz/create-antlr4/issues"
+  },
+  "homepage": "https://github.com/HaydenOrz/create-antlr4",
   "devDependencies": {
     "@types/node": "^20.14.12",
     "@types/prompts": "^2.4.9",
