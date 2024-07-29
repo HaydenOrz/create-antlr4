@@ -1,0 +1,18 @@
+{
+  "name": "template-antlr4-js",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "g4format": "antlr-format -c antlrformat.config -v src/grammar/**/*.g4",
+    "generate": "scripts/generate.mjs",
+    "dev": "node src/index.js"
+  },
+  "type": "module",
+  "dependencies": {
+    "antlr4": "^4.13.1"
+  },
+  "devDependencies": {
+    "antlr-format-cli": "^1.2.8",
+    "antlr4ng-cli": "^2.0.0"
+  }
+}
