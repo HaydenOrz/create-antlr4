@@ -4,20 +4,30 @@
   "description": "",
   "author": "Hayden",
   "license": "MIT",
-  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "create-antlr4": "index.js"
+  },
+  "files": [
+    "index.js",
+    "templates",
+    "dist"
+  ],
   "scripts": {
-    "lint-fix": "prettier **/*.ts **/*.mjs **/package.json **/tsconfig.json --write"
+    "format": "prettier --write . ",
+    "typecheck": "tsc --noEmit",
+    "build": "unbuild"
   },
   "engines": {
     "node": ">=18"
   },
-  "dependencies": {
-    "@inquirer/prompts": "^5.3.2",
-    "chalk": "^5.3.0"
-  },
   "devDependencies": {
     "@types/node": "^20.14.12",
+    "@types/prompts": "^2.4.9",
+    "kleur": "^3.0.3",
     "prettier": "^3.3.3",
-    "typescript": "^5.5.4"
+    "prompts": "^2.4.2",
+    "typescript": "^5.5.4",
+    "unbuild": "^2.0.0"
   }
 }
