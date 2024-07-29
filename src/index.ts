@@ -144,13 +144,13 @@ async function init() {
       choices: [
         {
           name: 'Antlr4ng + Typescript (Recommended)',
-          value: 'antlr4ng-ts',
-          description: 'Fully supports typescript!',
+          value: 'antlr4ng-typescript',
+          description: 'Fully supports typescript',
         },
         {
-          name: 'Antlr4ng + JavaScript',
-          value: 'antlr4ng-js',
-          description: 'Part of the Next Generation ANTLR Project',
+          name: 'Antlr4 + JavaScript',
+          value: 'antlr4-javascript',
+          description: 'The official Antlr4 runtime',
         },
       ],
       theme: {
@@ -187,7 +187,7 @@ async function init() {
   const templateDir = path.join(
     fileURLToPath(import.meta.url),
     '../../templates',
-    `template-${template}`
+    template
   );
 
   const pkgInfo = pkgFromUserAgent(process.env.npm_config_user_agent);
