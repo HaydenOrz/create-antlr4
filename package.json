@@ -15,7 +15,8 @@
   ],
   "scripts": {
     "prepublishOnly": "npm run build",
-    "format": "prettier --write . ",
+    "format": "prettier --write .",
+    "stylecheck": "prettier --check .",
     "typecheck": "tsc --noEmit",
     "build": "unbuild"
   },
@@ -37,9 +38,15 @@
     "@types/node": "^20.14.12",
     "@types/prompts": "^2.4.9",
     "kleur": "^3.0.3",
+    "lint-staged": "^15.2.7",
     "prettier": "^3.3.3",
     "prompts": "^2.4.2",
     "typescript": "^5.5.4",
     "unbuild": "^2.0.0"
+  },
+  "lint-staged": {
+    "*": [
+      "prettier --write --cache --ignore-unknown"
+    ]
   }
 }
