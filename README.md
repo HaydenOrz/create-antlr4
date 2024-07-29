@@ -2,6 +2,10 @@
 
 Using interactive command line to quickly create an ANTLR4 project.
 
+<img align='center' width=600 src='docs/images/demo.gif'/>
+
+<br/>
+
 > [!TIP]
 > ANTLR4 requires java to generate from a g4 file, so check your local java environment before you start creating a project. You can run `java --version` to do some simple checks.
 
