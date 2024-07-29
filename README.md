@@ -8,19 +8,19 @@ Using interactive command line to quickly create an ANTLR4 project.
 With NPM:
 
 ```bash
-$ npm create antlr4
+npm create antlr4@latest
 ```
 
 With Yarn:
 
 ```bash
-$ yarn create antlr4
+yarn create antlr4
 ```
 
 With PNPM:
 
 ```bash
-$ pnpm create antlr4
+pnpm create antlr4
 ```
 
 ## Built-in Templates
