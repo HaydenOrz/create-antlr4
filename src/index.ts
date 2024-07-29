@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { spawnSync } from 'node:child_process';
 import prompts from 'prompts';
 import kleur from 'kleur';
 
@@ -71,6 +72,35 @@ function pkgFromUserAgent(userAgent: string | undefined) {
     name: pkgSpecArr[0],
     version: pkgSpecArr[1],
   };
+}
+
+function checkJavaEnv() {
+  try {
+    const spawnReturns = spawnSync('java', ['-version'], { encoding: 'utf-8' });
+    const versionInfo = spawnReturns.stdout || spawnReturns.stderr;
+    const javaInstalled = spawnReturns.status === 0 && /(java|openjdk) version/i.test(versionInfo);
+    if (javaInstalled) {
+      return {
+        message: versionInfo,
+        javaEnvDetected: true,
+      };
+    } else {
+      return {
+        message: `Unrecognized Java version information: \n${versionInfo}`,
+        javaEnvDetected: false,
+      };
+    }
+  } catch (error: any) {
+    const message: string = error.stdout
+      ? `STDOUT: ${error.stdout.toString()}`
+      : error.stderr
+        ? `STDERR: ${error.stderr.toString()}`
+        : error.message;
+    return {
+      message,
+      javaEnvDetected: false,
+    };
+  }
 }
 
 async function init() {
@@ -162,7 +192,6 @@ async function init() {
   }
 
   console.log(`\nCreating project in ${root}...`);
-
   const templateDir = path.join(fileURLToPath(import.meta.url), '../../templates', template);
 
   const pkgInfo = pkgFromUserAgent(process.env.npm_config_user_agent);
@@ -184,21 +213,48 @@ async function init() {
   pkg.name = packageName || getPackageName();
   write('package.json', JSON.stringify(pkg, null, 2) + '\n');
 
-  const cdProjectName = path.relative(cwd, root);
+  console.log('\nChecking Java environment...');
+  const { javaEnvDetected, message } = checkJavaEnv();
+  const indentMessage = message
+    .split('\n')
+    .map((l) => `  ${l}`)
+    .join('\n');
+  if (javaEnvDetected) {
+    console.log(kleur.green('✔'), 'Check passed: Java environment detected.');
+  } else {
+    console.log(kleur.red('✖'), 'Check failed: Java environment not detected.');
+  }
+  console.log(indentMessage);
+
+  if (!javaEnvDetected) {
+    console.log(
+      `\nPlease check your Java environment and run 'java -version' to verify it.\nOtherwise you can't generate from a g4 file`
+    );
+  }
+
   console.log(`\nDone. Now run:\n`);
+  const cdProjectName = path.relative(cwd, root);
   if (root !== cwd) {
     console.log(`  cd ${cdProjectName.includes(' ') ? `"${cdProjectName}"` : cdProjectName}`);
   }
   switch (pkgManager) {
     case 'yarn':
       console.log('  yarn');
-      console.log('  yarn generate');
       console.log('  yarn dev');
       break;
     default:
       console.log(`  ${pkgManager} install`);
-      console.log(`  ${pkgManager} run generate`);
       console.log(`  ${pkgManager} run dev`);
+      break;
+  }
+
+  console.log('\nThen you can try to regenerate from the g4 file:\n');
+  switch (pkgManager) {
+    case 'yarn':
+      console.log('  yarn generate');
+      break;
+    default:
+      console.log(`  ${pkgManager} run generate`);
       break;
   }
   console.log();
