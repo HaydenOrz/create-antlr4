@@ -2,7 +2,9 @@
 
 Using interactive command line to quickly create an ANTLR4 project.
 
-<img align='center' width=600 src='docs/images/demo.gif'/>
+<div>
+<img width=680 src='docs/images/demo.gif'/>
+</div>
 
 <br/>
 
