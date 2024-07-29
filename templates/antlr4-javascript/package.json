@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "g4format": "antlr-format -c antlrformat.config -v src/grammar/**/*.g4",
+    "formatg4": "antlr-format -c antlrformatrc -v src/grammar/**/*.g4",
     "generate": "scripts/generate.mjs",
     "dev": "node src/index.js"
   },
