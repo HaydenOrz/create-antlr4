@@ -35,3 +35,8 @@ pnpm create antlr4
 
 - [Antlr4ng](https://github.com/mike-lischke/antlr4ng) + TypeScript (Recommended)
 - [Antlr4](https://github.com/antlr/antlr4/blob/dev/doc/javascript-target.md) + JavaScript
+
+## Antlr4 Development Tools
+
+- VSCode Extension [ANTLR4 grammar syntax support](https://marketplace.visualstudio.com/items?itemName=mike-lischke.vscode-antlr4)
+- JetBrains IDEs plugin [ANTLR v4](https://plugins.jetbrains.com/plugin/7358-antlr-v4)

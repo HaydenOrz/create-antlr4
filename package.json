@@ -13,6 +13,14 @@
     "templates",
     "dist"
   ],
+  "keywords": [
+    "antlr4",
+    "antlr4ng",
+    "cli",
+    "javascript",
+    "typescript",
+    "generate"
+  ],
   "scripts": {
     "prepublishOnly": "npm run build",
     "format": "prettier --write .",
